@@ -7,6 +7,7 @@ package it.polito.tdp.food;
 import java.net.URL;
 import java.util.ResourceBundle;
 import it.polito.tdp.food.model.Model;
+import it.polito.tdp.food.model.TypePortion;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -40,7 +41,7 @@ public class FoodController {
     private Button btnCammino; // Value injected by FXMLLoader
 
     @FXML // fx:id="boxPorzioni"
-    private ComboBox<?> boxPorzioni; // Value injected by FXMLLoader
+    private ComboBox<TypePortion> boxPorzioni; // Value injected by FXMLLoader
 
     @FXML // fx:id="txtResult"
     private TextArea txtResult; // Value injected by FXMLLoader
@@ -49,12 +50,26 @@ public class FoodController {
     void doCammino(ActionEvent event) {
     	txtResult.clear();
     	txtResult.appendText("Cerco cammino peso massimo...");
+    	String NString = txtPassi.getText();
+    	int N;
+    	try {
+    		N = Integer.parseInt(NString);
+    	}catch(NumberFormatException e) {
+    		txtResult.appendText("Devi inserire un numero!");
+    		return;
+    	}
+    	TypePortion tp = boxPorzioni.getValue();
+    	txtResult.appendText(""+ model.camminoMassimo(N, tp));
+    	txtResult.appendText("\n Peso del cammino trovato: "+ model.stampaPeso());
+    	
     }
 
     @FXML
     void doCorrelate(ActionEvent event) {
     	txtResult.clear();
     	txtResult.appendText("Cerco porzioni correlate...");
+    	TypePortion tp = boxPorzioni.getValue();
+    	txtResult.appendText("Porzioni correllate: \n"+model.getNumberOfConnectedComponents(tp));
     	
     }
 
@@ -62,6 +77,17 @@ public class FoodController {
     void doCreaGrafo(ActionEvent event) {
     	txtResult.clear();
     	txtResult.appendText("Creazione grafo...");
+    	String calorieString = txtCalorie.getText();
+    	int calorie;
+    	try {
+    		calorie = Integer.parseInt(calorieString);
+    	}catch(NumberFormatException e) {
+    		txtResult.appendText("Devi inserire un numero!");
+    		return;
+    	}
+    	model.creaGrafo(calorie);
+    	txtResult.appendText(model.infoGrafo());
+    	boxPorzioni.getItems().addAll(model.getPortionVertici());
     	
     }
 
@@ -79,5 +105,7 @@ public class FoodController {
     
     public void setModel(Model model) {
     	this.model = model;
+    	
+    	
     }
 }
